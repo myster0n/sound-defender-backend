@@ -12,6 +12,7 @@ var colors=["#FF00FF","#FFFF00","#00FF00","#00FFFF","#0000FF"];
 var players=[0,1,2,3,4];
 var connections=0;
 var host=null;
+var clients=[];
 io.sockets.on("connection",function(socket){
 
 	console.log("socket");
@@ -25,7 +26,11 @@ io.sockets.on("connection",function(socket){
 			socket.clientcolor=colors.shift();
 			socket.playernr=players.shift();
 			socket.emit('ok',{color:socket.clientcolor});
+			clients.push(socket);
 			connections++;
+			if(connections>colors.length && host!=null){
+				host.emit("fullroster");
+			}
 		}
 	});
 	socket.on("host",function(){
@@ -43,11 +48,21 @@ io.sockets.on("connection",function(socket){
   	socket.on('shoot', function(data){
   		if(host!=null) host.emit('shoot',{player:socket.playernr});
   	});
+  	socket.on('kill',function(data){
+  		for(var i=0;i<5;i++){
+  			if(clients[i].playernr==data.player){
+  				clients[i].emit('dead',{score:data.score});
+  				break;
+  			}
+  		}
+  	});
   	socket.on("disconnect",function(data){
   		if(socket.clientcolor){
   			colors.push(socket.clientcolor);
   			players.push(socket.playernr);
+  			clients.splice(clients.indexOf(socket),1);
   			delete socket.clientcolor;
+
   		}
   		if(socket==host){
   			host=null;
