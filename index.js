@@ -15,6 +15,18 @@ io.sockets.on("connection",function(socket){
   	socket.on('my other event', function (data) {
     	console.log(data);
   });
+  	socket.on('up', function(data){
+  		console.log(data);
+  		console.log("up");
+  	});
+  	socket.on('down', function(data){
+  		console.log(data);
+  		console.log("down");
+  	});
+  	socket.on('shoot', function(data){
+  		console.log(data);
+  		console.log("shoot");
+  	});
 });
 
 server.listen(8080);
