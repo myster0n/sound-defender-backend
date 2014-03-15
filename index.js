@@ -50,13 +50,9 @@ io.sockets.on("connection",function(socket){
   		for(var i=0;i<5;i++){
   			if(clients[i] && clients[i].playernr==data.player){
   				clients[i].emit('dead',{score:data.score});
-  				colors.push(clients[i].clientcolor);
-  				players.push(clients[i].playernr);
-  				counter=i;
   				break;
   			}
   		}
-  		clients.splice(i,1);
   	});
   	socket.on("disconnect",function(data){
   		if(socket.clientcolor){
