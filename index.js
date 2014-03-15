@@ -52,7 +52,7 @@ io.sockets.on("connection",function(socket){
   				clients[i].emit('dead',{score:data.score});
   				colors.push(clients[i].clientcolor);
   				players.push(clients[i].playernr);
-  				setTimeout(function(){disconnect(clients[i]);},0);
+  				setTimeout(function(){disconnector(clients[i]);},0);
   				break;
   			}
   		}
