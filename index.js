@@ -48,7 +48,7 @@ io.sockets.on("connection",function(socket){
   	socket.on('kill',function(data){
   		var counter=0;
   		for(var i=0;i<5;i++){
-  			if(clients[i].playernr==data.player){
+  			if(clients[i] && clients[i].playernr==data.player){
   				clients[i].emit('dead',{score:data.score});
   				colors.push(clients[i].clientcolor);
   				players.push(clients[i].playernr);
