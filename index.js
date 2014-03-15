@@ -52,13 +52,16 @@ io.sockets.on("connection",function(socket){
   				clients[i].emit('dead',{score:data.score});
   				colors.push(clients[i].clientcolor);
   				players.push(clients[i].playernr);
-  				clients[i].disconnect();
-  				counter=i;
+  				setTimeout(function(){disconnect(clients[i]);},0);
   				break;
   			}
   		}
   		clients.splice(i,1);
   	});
+  	function disconnector(socket){
+  		socket.disconnect();
+  		clients.splice(clients.indexOf(socket),1);
+  	}
   	socket.on("disconnect",function(data){
   		if(socket.clientcolor){
   			colors.push(socket.clientcolor);
