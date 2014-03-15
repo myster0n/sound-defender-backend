@@ -16,11 +16,12 @@ io.sockets.on("connection",function(socket){
 	console.log(socket);
 	socket.emit('news', { hello: 'world' });
 	socket.on("client",function(data){
-		if(connections>colors.length-1){
+		if(connections>colors.length){
 			socket.emit('nok');
 			socket.disconnect();
 		}else{
-			socket.emit('ok',{color:colors[connections]});
+			socket.clientcolor=colors.shift();
+			socket.emit('ok',{color:socket.clientcolor});
 			connections++;
 		}
 	});
@@ -40,6 +41,10 @@ io.sockets.on("connection",function(socket){
   		console.log("shoot");
   	});
   	socket.on("disconnect",function(data){
+  		if(socket.clientcolor){
+  			colors.push(socket.clientcolor);
+  			delete socket.clientcolor;
+  		}
   		connections--;
   	});
 });
