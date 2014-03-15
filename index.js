@@ -56,7 +56,6 @@ io.sockets.on("connection",function(socket){
   				break;
   			}
   		}
-  		clients.splice(i,1);
   	});
   	function disconnector(socket){
   		socket.disconnect();
