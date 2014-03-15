@@ -49,11 +49,7 @@ io.sockets.on("connection",function(socket){
   		var counter=0;
   		for(var i=0;i<5;i++){
   			if(clients[i] && clients[i].playernr==data.player){
-  				console.log("client found:",i);
   				clients[i].emit('dead',{score:data.score});
-  				colors.push(clients[i].clientcolor);
-  				players.push(clients[i].playernr);
-  				setTimeout(function(){disconnector(clients[i]);},100);
   				break;
   			}
   		}
