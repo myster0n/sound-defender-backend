@@ -35,18 +35,13 @@ io.sockets.on("connection",function(socket){
     	console.log(data);
   	});
   	socket.on('up', function(data){
-  		console.log(data);
-  		console.log("up");
   		if(host!=null) host.emit('up',{player:socket.playernr});
   	});
   	socket.on('down', function(data){
-  		console.log(data);
-  		console.log("down");
   		if(host!=null) host.emit('down',{player:socket.playernr});
   	});
   	socket.on('shoot', function(data){
-  		console.log(data);
-  		console.log("shoot");
+  		if(host!=null) host.emit('shoot',{player:socket.playernr});
   	});
   	socket.on("disconnect",function(data){
   		if(socket.clientcolor){
@@ -58,7 +53,7 @@ io.sockets.on("connection",function(socket){
   			host=null;
   		}else{
   		connections--;
-  			
+
   		}
   	});
 });
