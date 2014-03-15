@@ -8,20 +8,20 @@ app.use(express.static('../sound-defender'));
 var server = http.createServer(app);
 
 var io = require('socket.io').listen(server);
-var colors=["#FF0000","#FFFF00","#00FF00","#00FFFF","#0000FF"];
-var connections=-1;
+var colors=["#FF00FF","#FFFF00","#00FF00","#00FFFF","#0000FF"];
+var connections=0;
 io.sockets.on("connection",function(socket){
 
 	console.log("socket");
 	console.log(socket);
 	socket.emit('news', { hello: 'world' });
 	socket.on("client",function(data){
-		connections++;
 		if(connections>colors.length-1){
 			socket.emit('nok');
 			socket.disconnect();
 		}else{
 			socket.emit('ok',{color:colors[connections]});
+			connections++;
 		}
 	});
   	socket.on('my other event', function (data) {
