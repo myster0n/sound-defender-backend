@@ -35,10 +35,7 @@ io.sockets.on("connection",function(socket){
 	});
 	socket.on("host",function(){
 		host=socket;
-	})
-  	socket.on('my other event', function (data) {
-    	console.log(data);
-  	});
+	});
   	socket.on('up', function(data){
   		if(host!=null) host.emit('up',{player:socket.playernr});
   	});
@@ -49,12 +46,17 @@ io.sockets.on("connection",function(socket){
   		if(host!=null) host.emit('shoot',{player:socket.playernr});
   	});
   	socket.on('kill',function(data){
+  		var counter=0;
   		for(var i=0;i<5;i++){
   			if(clients[i].playernr==data.player){
   				clients[i].emit('dead',{score:data.score});
+  				colors.push(clients[i].clientcolor);
+  				players.push(clients[i].playernr);
+  				counter=i;
   				break;
   			}
   		}
+  		clients.splice(i,1);
   	});
   	socket.on("disconnect",function(data){
   		if(socket.clientcolor){
