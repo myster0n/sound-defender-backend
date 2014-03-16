@@ -8,7 +8,7 @@ app.use(express.static('../sound-defender'));
 var server = http.createServer(app);
 
 var io = require('socket.io').listen(server);
-var colors=["#FF00FF","#FFFF00","#00FF00","#00FFFF","#0000FF"];
+var colors=["#0000FF","#00FF00","#00FFFF","#FF00FF","#FFFF00"];
 var players=[0,1,2,3,4];
 var connections=0;
 var host=null;
