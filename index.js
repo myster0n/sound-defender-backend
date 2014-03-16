@@ -28,6 +28,9 @@ io.sockets.on("connection",function(socket){
 			socket.emit('ok',{color:socket.clientcolor});
 			clients.push(socket);
 			connections++;
+			if(host!=null){
+				host.emit('live',{player:socket.playernr});
+			}
 			if(connections>colors.length && host!=null){
 				host.emit("fullroster");
 			}
