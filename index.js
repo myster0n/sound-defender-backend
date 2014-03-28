@@ -14,28 +14,6 @@ var connections=0;
 var host=null;
 var adminvars=null;
 var clients=[];
-Object.clone = function (o) {
-    if (o === null || typeof(o) !== 'object') return o;
-
-    var objNew = o.constructor();
-
-    for (var key in o)
-        objNew[key] = Object.clone(o[key]);
-
-    return objNew;
-};
-Object.merge = function (o1, o2) {
-    var objNew = Object.clone(o1);
-    for (var p in o2) {
-        if (o2[p] && o2[p].constructor === Object) {
-            if (!o1[p]) o1[p] = {};
-            objNew[p] = Object.merge(o1[p], o2[p]);
-        } else {
-            objNew[p] = o2[p];
-        }
-    }
-    return objNew;
-};
 io.sockets.on("connection",function(socket){
 
 	console.log("socket");
@@ -71,9 +49,10 @@ io.sockets.on("connection",function(socket){
 			if(adminvars===null){
 				adminvars=data;
 			}else{
-				adminvars=Object.merge(adminvars,data);
+				adminvars.channels=data.channels||adminvars.channels;
+				adminvars.scale=data.scale||adminvars.scale;
+				adminvars.loudness=data.loudness||adminvars.loudness;
 			}
-
 		}else{
 			socket.emit('admin',data);
 		}
