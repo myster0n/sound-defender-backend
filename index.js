@@ -56,7 +56,7 @@ io.sockets.on("connection",function(socket){
 		}else{
 			console.log('admin');
 			console.log(data);
-			socket.emit('admin',data);
+			host.emit('admin',data);
 		}
 	});
   	socket.on('up', function(data){
