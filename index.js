@@ -54,6 +54,8 @@ io.sockets.on("connection",function(socket){
 				adminvars.loudness=data.loudness||adminvars.loudness;
 			}
 		}else{
+			console.log('admin');
+			console.log(data);
 			socket.emit('admin',data);
 		}
 	});
