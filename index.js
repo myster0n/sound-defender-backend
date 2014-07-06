@@ -13,28 +13,64 @@ var players=[0,1,2,3,4];
 var connections=0;
 var host=null;
 var adminvars=null;
-var clients=[];
+// var players=[];
+
+var nrOfPlayers = 4;
+
+var pinCode;
+
+function Player(id, socket) {
+	this.alive = false;
+	this.socket = socket;
+	this.id = id;
+}
+
+var players = new Array(nrOfPlayers);
+for (var i=0; i<nrOfPlayers; i++) {
+	players[i] = new Player(i);
+}
+
 io.sockets.on("connection",function(socket){
 
 	console.log("socket");
 	console.log(socket);
 	socket.emit('news', { hello: 'world' });
 	socket.on("client",function(data){
-		if(connections>colors.length){
-			socket.emit('nok');
+		var accepted = false;
+
+		if (!pinCode) {
+			socket.emit("nok", { status: "404", message: "no game found" });
 			socket.disconnect();
-		}else{
-			socket.clientcolor=colors.shift();
-			socket.playernr=players.shift();
-			socket.emit('ok',{color:socket.clientcolor});
-			clients.push(socket);
-			connections++;
-			if(host!=null){
-				host.emit('live',{player:socket.playernr});
+			return;
+		}
+
+		if (false && pinCode != data.pin) {
+			socket.emit("nok", { status: "400", message: "invalid pin code" }); // i.e. no game found
+			socket.disconnect();
+			return;
+		}
+
+		for (var i=0; i<players.length; i++) {
+			if (!players[i] || !players[i].alive) {
+				console.log("creating client");
+				players[i] = new Player(i, socket);
+				socket.player = players[i];
+				socket.player.alive = true;
+				socket.emit('ok',{color:colors[i]});
+				if(host!=null){
+					host.emit('live',{player:i});
+				}
+				accepted = true;
+				break;
 			}
-			if(connections>colors.length && host!=null){
-				host.emit("fullroster");
-			}
+		}
+
+		if (accepted) {
+			verifyGameState();
+		} else {
+			console.log(players);
+			socket.emit("nok", { status: "409", message: "Game already busy." });
+			socket.disconnect();
 		}
 	});
 	socket.on("host",function(){
@@ -43,6 +79,7 @@ io.sockets.on("connection",function(socket){
 			socket.emit('admin',adminvars);
 			adminvars=null;
 		}
+		initNewGame();
 	});
 	socket.on("admin", function(data){
 		if(host===null){
@@ -60,42 +97,71 @@ io.sockets.on("connection",function(socket){
 		}
 	});
   	socket.on('up', function(data){
-  		if(host!=null && socket.clientcolor) host.emit('up',{player:socket.playernr});
+  		if(host!=null && socket.player && socket.player.alive) host.emit('up',{player:socket.player.id});
   	});
   	socket.on('down', function(data){
-  		if(host!=null && socket.clientcolor) host.emit('down',{player:socket.playernr});
+		if(host!=null && socket.player && socket.player.alive) host.emit('down',{player:socket.player.id});
   	});
   	socket.on('shoot', function(data){
-  		if(host!=null && socket.clientcolor) host.emit('shoot',{player:socket.playernr});
+		if(host!=null && socket.player && socket.player.alive) host.emit('shoot',{player:socket.player.id});
   	});
   	socket.on('kill',function(data){
-  		var counter=0;
-  		for(var i=0;i<clients.length;i++){
-  			if(clients[i] && clients[i].playernr==data.player){
-  				clients[i].emit('dead',{score:data.score});
-  				break;
-  			}
-  		}
+		players.every(function(player, index) {
+				if (player && player.id === data.player && player.alive) {
+					player.alive = false;
+					if (player.socket) {
+						player.socket.emit('dead',{score:data.score});
+					}
+					player.socket = undefined;
+					return false;
+				}
+		});
   	});
-  	function disconnector(socket){
-  		socket.disconnect();
-  		clients.splice(clients.indexOf(socket),1);
-  	}
   	socket.on("disconnect",function(data){
-  		if(socket.clientcolor){
-  			colors.push(socket.clientcolor);
-  			players.push(socket.playernr);
-  			clients.splice(clients.indexOf(socket),1);
-  			delete socket.clientcolor;
+
+  		if(socket.player){
+  			socket.player.alive = false;
+			socket.player.socket = undefined;
+  			delete socket.player;
 
   		}
   		if(socket==host){
   			host=null;
   		}else{
-  		connections--;
-
+  			connections--;
+			verifyGameState();
   		}
   	});
 });
+
+function generatePinCode() {
+	return Math.floor(Math.random()*9000) + 1000;
+}
+
+function verifyGameState() {
+	var allAlive = true;
+	var allDead = true;
+	players.every(function(player) {
+		if (player.alive) {
+			allDead = false;
+		} else {
+			allAlive = false;
+		}
+	});
+
+	if (allDead) {
+		initNewGame();
+	}
+
+	if (allAlive) {
+		host.emit("startGame");
+	}
+
+}
+
+function initNewGame() {
+	pinCode = generatePinCode();
+	host.emit("newGame", { pin: pinCode });
+}
 
 server.listen(9080);
