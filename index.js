@@ -134,6 +134,7 @@ io.sockets.on("connection",function(socket){
   	});
 });
 
+<<<<<<< HEAD
 function generatePinCode() {
 	return Math.floor(Math.random()*9000) + 1000;
 }
@@ -164,4 +165,37 @@ function initNewGame() {
 	if (host) host.emit("newGame", { pin: pinCode });
 }
 
+||||||| merged common ancestors
+=======
+function generatePinCode() {
+	return Math.floor(Math.random()*9000) + 1000;
+}
+
+function verifyGameState() {
+	var allAlive = true;
+	var allDead = true;
+	players.every(function(player) {
+		if (player.alive) {
+			allDead = false;
+		} else {
+			allAlive = false;
+		}
+	});
+
+	if (allDead) {
+		initNewGame();
+	}
+
+	if (allAlive) {
+		host.emit("startGame");
+	}
+
+}
+
+function initNewGame() {
+	pinCode = generatePinCode();
+	host.emit("newGame", { pin: pinCode });
+}
+
+>>>>>>> bdfa0ccc505c06563930eadc56547cb3f6e90430
 server.listen(9080);
