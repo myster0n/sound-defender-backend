@@ -9,7 +9,6 @@ var server = http.createServer(app);
 
 var io = require('socket.io').listen(server);
 var colors=["0000FF","00FF00","00FFFF","FF00FF","FFFF00"];
-var players=[0,1,2,3,4];
 var connections=0;
 var host=null;
 var adminvars=null;
@@ -44,7 +43,7 @@ io.sockets.on("connection",function(socket){
 			return;
 		}
 
-		if (false && pinCode != data.pin) {
+		if (pinCode != data.pin) {
 			socket.emit("nok", { status: "400", message: "invalid pin code" }); // i.e. no game found
 			socket.disconnect();
 			return;
