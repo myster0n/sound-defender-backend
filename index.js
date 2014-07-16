@@ -16,6 +16,8 @@ var adminvars=null;
 
 var nrOfPlayers = 4;
 
+var countDownTime = 30000;
+var startGameCountDown;
 var pinCode;
 
 function Player(id, socket) {
@@ -154,15 +156,32 @@ function verifyGameState() {
 
 	if (allDead) {
 		initNewGame();
+        return;
 	}
 
 	if (allAlive) {
-		if (host) host.emit("startGame");
-	}
+        startGame();
+        return;
+	} else {
+        if (!startGameCountDown) {
+            startGameCountDown = setTimeout(startGame, countDownTime);
+        }
+    }
+}
 
+function startGame() {
+    if (startGameCountDown) {
+        clearTimeout(startGameCountDown);
+        startGameCountDown = null;
+    }
+    if (host) host.emit("startGame");
 }
 
 function initNewGame() {
+    if (startGameCountDown) {
+        clearTimeout(startGameCountDown);
+        startGameCountDown = null;
+    }
 	pinCode = generatePinCode();
 	if (host) host.emit("newGame", { pin: pinCode });
 }
