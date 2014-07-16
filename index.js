@@ -139,6 +139,10 @@ function generatePinCode() {
 }
 
 function verifyGameState() {
+    if (!host) {
+        pinCode = null;
+        return;
+    }
 	var allAlive = true;
 	var allDead = true;
 	players.every(function(player) {
