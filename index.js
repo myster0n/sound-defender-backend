@@ -73,6 +73,7 @@ io.sockets.on("connection",function(socket){
 		}
 	});
 	socket.on("host",function(){
+        console.log('received host from: '+socket.handshake.address.address);
 		host=socket;
 		if(adminvars!==null){
 			socket.emit('admin',adminvars);
