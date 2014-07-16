@@ -31,8 +31,6 @@ for (var i=0; i<nrOfPlayers; i++) {
 
 io.sockets.on("connection",function(socket){
 
-	console.log("socket");
-	console.log(socket);
 	socket.emit('news', { hello: 'world' });
 	socket.on("client",function(data){
 		var accepted = false;
@@ -145,13 +143,14 @@ function verifyGameState() {
     }
 	var allAlive = true;
 	var allDead = true;
-	players.every(function(player) {
-		if (player.alive) {
+	
+	for (var i=0; i<players.length; i++) {
+		if (players[i].alive) {
 			allDead = false;
 		} else {
 			allAlive = false;
 		}
-	});
+	}
 
 	if (allDead) {
 		initNewGame();
