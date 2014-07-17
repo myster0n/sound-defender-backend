@@ -106,16 +106,17 @@ io.sockets.on("connection",function(socket){
 		if(host!=null && socket.player && socket.player.alive) host.emit('shoot',{player:socket.player.id});
   	});
   	socket.on('kill',function(data){
-		players.every(function(player, index) {
-				if (player && player.id === data.player && player.alive) {
-					player.alive = false;
-					if (player.socket) {
-						player.socket.emit('dead',{score:data.score});
-					}
-					player.socket = undefined;
-					return false;
+		for (var i=0; i<players.length; i++) {
+			var player=players[i];
+			if (player && player.id === data.player && player.alive) {
+				player.alive = false;
+				if (player.socket) {
+					player.socket.emit('dead',{score:data.score});
 				}
-		});
+				player.socket = undefined;
+				break;
+			}
+		}
   	});
   	socket.on("disconnect",function(data){
 
@@ -127,7 +128,7 @@ io.sockets.on("connection",function(socket){
   		}
   		if(socket==host){
   			host=null;
-  		}else{
+  		}else if (socket.player) {
   			connections--;
 			verifyGameState();
   		}
