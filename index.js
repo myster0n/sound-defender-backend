@@ -170,6 +170,7 @@ function verifyGameState() {
 }
 
 function startGame() {
+    pinCode = null;
     if (startGameCountDown) {
         clearTimeout(startGameCountDown);
         startGameCountDown = null;
