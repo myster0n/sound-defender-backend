@@ -114,6 +114,7 @@ io.sockets.on("connection",function(socket){
 					player.socket.emit('dead',{score:data.score});
 				}
 				player.socket = undefined;
+				verifyGameState();
 				break;
 			}
 		}
