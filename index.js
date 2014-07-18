@@ -72,7 +72,7 @@ app.post('/addscore', function(req, res) {
 	}
 
 	var stmt = scoreDB.prepare("INSERT INTO scores VALUES (?, ?)");
-	stmt.run(score, email);
+	stmt.run(email, score);
 	stmt.finalize();
 
 	console.log("score: "+score+" email: "+email);
