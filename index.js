@@ -87,7 +87,7 @@ function decryptScore(input) {
 
 function encryptScore(score) {
 	var cipher = crypto.createCipher('aes256', cryptoKey);
-	return cipher.update(score, 'utf8', 'hex') + cipher.final('hex');
+	return cipher.update(''+score, 'utf8', 'hex') + cipher.final('hex');
 }
 
 io.sockets.on("connection",function(socket){
