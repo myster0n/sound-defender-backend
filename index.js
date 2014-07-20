@@ -43,8 +43,8 @@ scoreDB.serialize(function() {
 });
 
 
-app.use(express.urlencoded())
-app.use(express.json())
+app.use(express.urlencoded());
+app.use(express.json());
 app.post('/addscore', function(req, res) {
 	if (!req.param('score') || !req.param('email')|| !req.param('name')) {
 		res.send(400, 'Naam of email adres niet meegegeven!');
