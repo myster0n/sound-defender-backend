@@ -215,6 +215,9 @@ function sendTopTen(){
         scoreDB.each("SELECT name, score FROM scores ORDER BY score DESC LIMIT 10", function(err, row){
                 scores.push(row);
         },function(){
+            while(scores.length<10){
+                scores.push({name:"Hodor",score:0});
+            }
             host.emit('scores',scores);
         });
     }
