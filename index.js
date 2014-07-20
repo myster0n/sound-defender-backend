@@ -248,10 +248,17 @@ function verifyGameState() {
 	}
 
 	if (allAlive) {
-        startGame();
+        if (startGameCountDown) {
+            clearTimeout(startGameCountDown);
+            startGameCountDown = null;
+        }
+        startGameCountDown = setTimeout(startGame, 3000);
 	} else {
         if (!startGameCountDown) {
             startGameCountDown = setTimeout(startGame, countDownTime);
+            if(host!==null){
+                host.emit("countdown",{timer:countDownTime});
+            }
         }
     }
 }
