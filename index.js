@@ -18,12 +18,12 @@ var host=null;
 var adminvars=null;
 // var players=[];
 
-var cryptoKey = "CHANGE_ME";
-var scoreDBFile = "scores.db";
+var cryptoKey = "key_ken";
+var scoreDBFile = "JIMscores.db";
 var nrOfPlayers = 4;
 
 var scoreDB = new sqlite3.Database(scoreDBFile);
-var countDownTime = 30000;
+var countDownTime = 5000;
 var startGameCountDown;
 var pinCode;
 
@@ -39,14 +39,15 @@ for (var i=0; i<nrOfPlayers; i++) {
 }
 
 scoreDB.serialize(function() {
-	scoreDB.run("create table if not exists scores (email TEXT, score TEXT)");
+	scoreDB.run("create table if not exists scores (name TEXT, email TEXT, score INTEGER)");
 });
+
 
 app.use(express.urlencoded())
 app.use(express.json())
 app.post('/addscore', function(req, res) {
-	if (!req.param('score') || !req.param('email')) {
-		res.send(400, 'Score of email adres niet meegegeven!');
+	if (!req.param('score') || !req.param('email')|| !req.param('name')) {
+		res.send(400, 'Naam of email adres niet meegegeven!');
 		res.end();
 		return;
 	}
@@ -57,6 +58,7 @@ app.post('/addscore', function(req, res) {
 		if (!validator.isInt(score)) {
 			throw new Error('Score klopt niet!');
 		}
+        score=parseInt(score);
 
 	} catch (err) {
 		res.send(400, 'Score klopt niet!');
@@ -70,14 +72,25 @@ app.post('/addscore', function(req, res) {
 		res.end();
 		return;
 	}
-
-	var stmt = scoreDB.prepare("INSERT INTO scores VALUES (?, ?)");
-	stmt.run(email, score);
+    var name=req.param('name').trim();
+    if(name.length<2){
+        res.send(400,'naam is te kort/niet ingevuld!');
+        res.end();
+        return;
+    }
+    if(name.length>20){
+        res.send(400,'naam is te lang!');
+        res.end();
+        return;
+    }
+	var stmt = scoreDB.prepare("INSERT INTO scores VALUES (?, ?, ?)");
+	stmt.run(name, email, score);
 	stmt.finalize();
 
-	console.log("score: "+score+" email: "+email);
-	res.send(200, 'Uw score werd opgeslaan. Bedankt!');
+	console.log("score: "+score+" email: "+email+" naam: "+name);
+	res.send(200, 'Uw score werd opgeslagen. Bedankt!');
 	res.end();
+    sendTopTen();
 });
 
 function decryptScore(input) {
@@ -132,12 +145,14 @@ io.sockets.on("connection",function(socket){
 		}
 	});
 	socket.on("host",function(){
+
         console.log('received host from: '+socket.handshake.address.address);
 		host=socket;
 		if(adminvars!==null){
 			socket.emit('admin',adminvars);
 			adminvars=null;
 		}
+        sendTopTen();
 		initNewGame();
 	});
 	socket.on("admin", function(data){
@@ -194,7 +209,16 @@ io.sockets.on("connection",function(socket){
   		}
   	});
 });
-
+function sendTopTen(){
+    if(host!==null){
+        var scores=[];
+        scoreDB.each("SELECT name, score FROM scores ORDER BY score DESC LIMIT 10", function(err, row){
+                scores.push(row);
+        },function(){
+            host.emit('scores',scores);
+        });
+    }
+}
 function generatePinCode() {
 	return Math.floor(Math.random()*9000) + 1000;
 }
@@ -222,7 +246,6 @@ function verifyGameState() {
 
 	if (allAlive) {
         startGame();
-        return;
 	} else {
         if (!startGameCountDown) {
             startGameCountDown = setTimeout(startGame, countDownTime);
@@ -237,6 +260,12 @@ function startGame() {
         startGameCountDown = null;
     }
     if (host) host.emit("startGame");
+    for (var i=0; i<players.length; i++) {
+        var player=players[i];
+        if (player &&  player.alive && player.socket) {
+            player.socket.emit("start",{start:true});
+        }
+    }
 }
 
 function initNewGame() {
