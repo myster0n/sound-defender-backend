@@ -23,7 +23,7 @@ var scoreDBFile = "JIMscores.db";
 var nrOfPlayers = 4;
 
 var scoreDB = new sqlite3.Database(scoreDBFile);
-var countDownTime = 5000;
+var countDownTime = 30000;
 var startGameCountDown;
 var pinCode;
 
@@ -196,6 +196,9 @@ io.sockets.on("connection",function(socket){
   	socket.on("disconnect",function(data){
 
   		if(socket.player){
+            if(host!==null){
+                host.emit('lost',{id:socket.player.id});
+            }
   			socket.player.alive = false;
 			socket.player.socket = undefined;
   			delete socket.player;
@@ -287,4 +290,4 @@ function initNewGame() {
 	if (host) host.emit("newGame", { pin: pinCode });
 }
 
-server.listen(9080);
+server.listen(process.env.PORT || 9080);
