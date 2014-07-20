@@ -228,7 +228,7 @@ function sendTopTen(){
 function generatePinCode() {
 	return Math.floor(Math.random()*9000) + 1000;
 }
-
+var wasAllDead=true;
 function verifyGameState() {
     if (!host) {
         pinCode = null;
@@ -246,9 +246,14 @@ function verifyGameState() {
 	}
 
 	if (allDead) {
-		initNewGame();
+        if(!wasAllDead){
+            wasAllDead=allDead;
+            initNewGame();
+        }
         return;
 	}
+
+    wasAllDead=allDead;
 
 	if (allAlive) {
         if (startGameCountDown) {
