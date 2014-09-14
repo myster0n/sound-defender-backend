@@ -5,6 +5,16 @@ var validator = require('validator');
 var fs = require("fs");
 var sqlite3 = require("sqlite3").verbose();
 var app = express();
+var alienImages = require("./alienImages");
+
+alienImages.init({
+	destinationFolder: "/home/lennart/temp/converted/",
+	sourceFolder: "/home/lennart/temp/source/"
+})
+
+alienImages.watchFolder("/home/lennart/temp/images/", function(prev) {
+	if (adminClient) sendAliens(adminClient);
+})
 
 app.use(express.static('../sound-defender'));
 
@@ -15,6 +25,7 @@ var io = require('socket.io').listen(server);
 var colors=["0000FF","00FF00","00FFFF","FF00FF","FFFF00"];
 var connections=0;
 var host=null;
+var adminClient=null;
 var adminvars=null;
 // var players=[];
 
@@ -155,7 +166,14 @@ io.sockets.on("connection",function(socket){
         sendTopTen();
 		initNewGame();
 	});
+	socket.on("gimmeAliens", function(data) {
+		sendAliens(socket);
+	});
 	socket.on("admin", function(data){
+		if (data.hello) {
+			adminClient=socket;
+			return;
+		}
 		if(host===null){
 			if(adminvars===null){
 				adminvars=data;
@@ -236,7 +254,7 @@ function verifyGameState() {
     }
 	var allAlive = true;
 	var allDead = true;
-	
+
 	for (var i=0; i<players.length; i++) {
 		if (players[i].alive) {
 			allDead = false;
@@ -272,7 +290,7 @@ function verifyGameState() {
 }
 
 function startGame() {
-    pinCode = null;
+    pinCode = null;²
     if (startGameCountDown) {
         clearTimeout(startGameCountDown);
         startGameCountDown = null;
@@ -284,6 +302,12 @@ function startGame() {
             player.socket.emit("start",{start:true});
         }
     }
+}
+
+function sendAliens(socket) {
+	if (socket) alienImages.getLatestConverted(20, function(files) {
+		socket.emit('aliens', files);
+	})
 }
 
 function initNewGame() {
