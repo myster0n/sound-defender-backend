@@ -29,6 +29,7 @@ var host=null;
 var adminClient=null;
 var adminvars=null;
 var scorepanel=null;
+var pincodepanel=null;
 // var players=[];
 
 var cryptoKey = "key_ken";
@@ -168,14 +169,17 @@ io.sockets.on("connection",function(socket){
         sendTopTen();
 		initNewGame();
 	});
-    socket.on("scorepanel",function(){
-        console.log('received scorepanel from: '+socket.handshake.address.address);
-        scorepanel=socket;
-        sendScores();
-    })
+	socket.on("scorepanel",function(){
+		console.log('received scorepanel from: '+socket.handshake.address.address);
+		scorepanel=socket;
+		sendScores();
+	})
     socket.on("getscores",function(){
         sendScores();
     })
+	socket.on("pincodepanel",function(){
+		pincodepanel=socket;
+	})
 	socket.on("gimmeAliens", function(data) {
 		sendAliens(socket);
 	});
@@ -340,6 +344,7 @@ function initNewGame() {
     }
 	pinCode = generatePinCode();
 	if (host) host.emit("newGame", { pin: pinCode });
+	if (pincodepanel) pincodepanel.emit("newGame", { pin: pinCode });
 }
 
 server.listen(process.env.PORT || 9080);
