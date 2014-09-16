@@ -169,6 +169,9 @@ io.sockets.on("connection",function(socket){
 	socket.on("gimmeAliens", function(data) {
 		sendAliens(socket);
 	});
+	socket.on("setAlien", function(data) {
+		console.log("set alien to: "+data.image);
+	});
 	socket.on("admin", function(data){
 		if (data.hello) {
 			adminClient=socket;
@@ -290,7 +293,7 @@ function verifyGameState() {
 }
 
 function startGame() {
-    pinCode = null;²
+    pinCode = null;
     if (startGameCountDown) {
         clearTimeout(startGameCountDown);
         startGameCountDown = null;
