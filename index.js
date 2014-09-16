@@ -345,6 +345,7 @@ function initNewGame() {
 	pinCode = generatePinCode();
 	if (host) host.emit("newGame", { pin: pinCode });
 	if (pincodepanel) pincodepanel.emit("newGame", { pin: pinCode });
+    if(adminClient) adminClient.emit("newGame");
 }
 
 server.listen(process.env.PORT || 9080);
