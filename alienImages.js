@@ -72,7 +72,7 @@ var convertImage = function(source, callback) {
     var finalFile = destinationFolder + "/" + destFileName;
     var step1 = function() {
         console.log("Converting "+source+" step 1...");
-        im.convert( [source, '-resize', '60x60^', '-gravity', 'South-East', '-extent', '134x100', '-gravity', 'North-West', '-extent', '200x200', '-background', 'none', tempFile],
+        im.convert( [source, '-resize', '60x60^','-gravity','Center','-crop','60x60+0+0', '+repage','-gravity', 'South-East', '-extent', '134x100', '-gravity', 'North-West', '-extent', '200x200', '-background', 'none', tempFile],
             function(err, stdout){ if (err) console.error(err); else step2(); }
         );
     }
