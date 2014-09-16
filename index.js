@@ -8,11 +8,11 @@ var app = express();
 var alienImages = require("./alienImages");
 
 alienImages.init({
-	destinationFolder: "/home/lennart/temp/converted/",
-	sourceFolder: "/home/lennart/temp/source/"
+	destinationFolder: "temp/converted/",
+	sourceFolder: "temp/source/"
 })
 
-alienImages.watchFolder("/home/lennart/temp/images/", function(prev) {
+alienImages.watchFolder("temp/images/", function(prev) {
 	if (adminClient) sendAliens(adminClient);
 })
 
@@ -22,7 +22,8 @@ app.use(express.static('../sound-defender'));
 var server = http.createServer(app);
 
 var io = require('socket.io').listen(server);
-var colors=["0000FF","00FF00","00FFFF","FF00FF","FFFF00"];
+//var colors=["0000FF","00FF00","00FFFF","FF00FF","FFFF00"];
+var colors=["bear","cat","monkey","penguin"];
 var connections=0;
 var host=null;
 var adminClient=null;
@@ -290,7 +291,7 @@ function verifyGameState() {
 }
 
 function startGame() {
-    pinCode = null;²
+    pinCode = null;
     if (startGameCountDown) {
         clearTimeout(startGameCountDown);
         startGameCountDown = null;
