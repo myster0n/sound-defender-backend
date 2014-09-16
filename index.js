@@ -170,7 +170,7 @@ io.sockets.on("connection",function(socket){
 		sendAliens(socket);
 	});
 	socket.on("setAlien", function(data) {
-		console.log("set alien to: "+data.image);
+		if (host) host.emit("setAlien", data);
 	});
 	socket.on("admin", function(data){
 		if (data.hello) {
