@@ -28,6 +28,7 @@ var connections=0;
 var host=null;
 var adminClient=null;
 var adminvars=null;
+var scorepanel=null;
 // var players=[];
 
 var cryptoKey = "key_ken";
@@ -245,6 +246,16 @@ function sendTopTen(){
             }
             host.emit('scores',scores);
         });
+    }
+}
+function sendScores(){
+    if(scorepanel!==null){
+        var scores=[];
+        scoreDB.each("SELECT name, score FROM scores ORDER BY score DESC",function(err,row){
+            scores.push(row);
+        },function(){
+            scorepanel.emit('scores',scores);
+        })
     }
 }
 function generatePinCode() {
