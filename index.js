@@ -170,6 +170,9 @@ io.sockets.on("connection",function(socket){
 	socket.on("gimmeAliens", function(data) {
 		sendAliens(socket);
 	});
+	socket.on("setAlien", function(data) {
+		console.log("set alien to: "+data.image);
+	});
 	socket.on("admin", function(data){
 		if (data.hello) {
 			adminClient=socket;
