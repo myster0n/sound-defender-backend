@@ -168,6 +168,14 @@ io.sockets.on("connection",function(socket){
         sendTopTen();
 		initNewGame();
 	});
+    socket.on("scorepanel",function(){
+        console.log('received scorepanel from: '+socket.handshake.address.address);
+        scorepanel=socket;
+        sendScores();
+    })
+    socket.on("getscores",function(){
+        sendScores();
+    })
 	socket.on("gimmeAliens", function(data) {
 		sendAliens(socket);
 	});
