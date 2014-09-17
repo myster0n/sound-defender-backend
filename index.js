@@ -186,6 +186,9 @@ io.sockets.on("connection",function(socket){
 	socket.on("setAlien", function(data) {
 		if (host) host.emit("setAlien", data);
 	});
+    socket.on("removeAlien",function(data){
+        if(host) host.emit("removeAlien",data);
+    });
 	socket.on("admin", function(data){
 		if (data.hello) {
 			adminClient=socket;
