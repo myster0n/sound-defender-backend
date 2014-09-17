@@ -9,8 +9,9 @@ var alienImages = require("./alienImages");
 
 alienImages.init({
 	destinationFolder: "temp/converted/",
-	sourceFolder: "temp/source/"
-})
+	sourceFolder: "temp/source/",
+    callback: newAlien
+});
 
 alienImages.watchFolder("temp/images/", function(prev) {
 	if (adminClient) sendAliens(adminClient);
@@ -338,6 +339,9 @@ function sendAliens(socket) {
 	if (socket) alienImages.getLatestConverted(20, function(files) {
 		socket.emit('aliens', files);
 	})
+}
+function newAlien(alien){
+    if(adminClient) adminClient.emit('newAlien',alien);
 }
 
 function initNewGame() {

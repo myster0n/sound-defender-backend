@@ -5,12 +5,13 @@ var path = require('path');
 
 var destinationFolder = "converted/"
 var sourceFolder = "source/"
-
+var backendCall=null;
 var alienImages = {};
 
 alienImages.init = function(options) {
     if (options.destinationFolder) destinationFolder = options.destinationFolder;
     if (options.sourceFolder) sourceFolder = options.sourceFolder;
+    if (options.callback) backendCall = options.callback;
 }
 
 alienImages.watchFolder = function(folder, callback) {
@@ -87,7 +88,9 @@ var convertImage = function(source, callback) {
         im.convert( [sourceFolder+'/spaceship_badguys_user.png', tempFile, '-compose', 'Over', '-composite', sourceFolder+'/bigover.png', '-compose', 'Overlay', '-composite', finalFile],
             function(err, stdout){ if (err) console.error(err); else {
                 fs.unlink(tempFile,  function (err) { if (err) console.error(err); });
-                console.log(source+" converted to "+finalFile);
+                if(backendCall && typeof backendCall === 'function'){
+                    backendCall(destFileName);
+                }
             }}
         );
     }
