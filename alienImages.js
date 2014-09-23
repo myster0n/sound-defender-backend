@@ -76,13 +76,13 @@ var convertImage = function(source, callback) {
         im.convert( [source, '-resize', '60x60^','-gravity','Center','-crop','60x60+0+0', '+repage','-gravity', 'South-East', '-extent', '134x100', '-gravity', 'North-West', '-extent', '200x200', '-background', 'none', tempFile],
             function(err, stdout){ if (err) console.error(err); else step2(); }
         );
-    }
+    };
     var step2 = function() {
         console.log("Converting "+source+" step 2...");
         im.convert( ['-size', '1024x1024', 'tile:'+tempFile, '+repage', sourceFolder+'/bigmask.png', '-compose', 'CopyOpacity', '-composite', 'PNG32:'+tempFile],
             function(err, stdout){ if (err) console.error(err); else step3(); }
         );
-    }
+    };
     var step3 = function() {
         console.log("Converting "+source+" step 3...");
         im.convert( [sourceFolder+'/spaceship_badguys_user.png', tempFile, '-compose', 'Over', '-composite', sourceFolder+'/bigover.png', '-compose', 'Overlay', '-composite', finalFile],
@@ -93,7 +93,7 @@ var convertImage = function(source, callback) {
                 }
             }}
         );
-    }
+    };
     step1();
 }
 
